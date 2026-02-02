@@ -102,12 +102,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  let currentTetrisInstance = null;
+
   function startGame() {
+    if (currentTetrisInstance) {
+      currentTetrisInstance.stop();
+    }
     showScreen('game');
-    const tetris = new Tetris('tetris', (finalScore) => {
+    currentTetrisInstance = new Tetris('tetris', (finalScore) => {
         alert('Game Over! Your Score: ' + finalScore);
         location.reload(); 
     });
-    tetris.start();
+    currentTetrisInstance.start();
   }
 });
