@@ -26,6 +26,21 @@ class Tetris {
         
         this.animationId = null;
         this.keyDownHandler = null;
+        this.keyUpHandler = null;
+
+        this.keys = {
+            37: false, // Left
+            39: false, // Right
+            40: false  // Down
+        };
+        this.keyTimers = {
+            37: 0,
+            39: 0
+        };
+        this.DAS = 150; // Delay Auto Shift (ms)
+        this.ARR = 30;  // Auto Repeat Rate (ms)
+        this.normalDropInterval = 1000;
+        this.fastDropInterval = 50;
 
         this.reset();
     }
@@ -34,7 +49,7 @@ class Tetris {
         this.grid = Array.from({ length: this.ROWS }, () => Array(this.COLS).fill(0));
         this.score = 0;
         this.dropCounter = 0;
-        this.dropInterval = 1000;
+        this.dropInterval = this.normalDropInterval;
         this.lastTime = 0;
         this.player = {
             pos: { x: 0, y: 0 },
@@ -43,6 +58,11 @@ class Tetris {
         };
         this.isGameOver = false;
         this.isPaused = false;
+        
+        // Reset key states
+        this.keys = { 37: false, 39: false, 40: false };
+        this.keyTimers = { 37: 0, 39: 0 };
+
         this.playerReset();
         this.updateScore();
     }
@@ -203,7 +223,6 @@ class Tetris {
         }
     }
 
-    // Helper to find bounds of the current piece
     getPieceBounds(matrix) {
         let minX = matrix[0].length;
         let maxX = -1;
@@ -222,51 +241,38 @@ class Tetris {
         this.ctx.fillStyle = '#000';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Scale for drawing
         this.ctx.save();
         this.ctx.scale(this.BLOCK_SIZE, this.BLOCK_SIZE);
         
         this.drawMatrix(this.grid, {x: 0, y: 0});
 
-        // --- Ghost Piece / Guide Lines Logic ---
-        // 1. Calculate ghost position (where piece lands)
         const ghostPos = { x: this.player.pos.x, y: this.player.pos.y };
         while (!this.collide(this.grid, { matrix: this.player.matrix, pos: ghostPos })) {
             ghostPos.y++;
         }
-        ghostPos.y--; // Step back to valid position
+        ghostPos.y--; 
 
-        // 2. Draw Guide Lines (Dotted lines from piece down to ghost)
         const { minX, maxX } = this.getPieceBounds(this.player.matrix);
-        // We draw lines in simulation coordinates (scaled), but standard canvas lines are easier with absolute coords if we want 1px width.
-        // However, we are scaled. Let's draw effectively.
         
         this.ctx.save();
         this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-        this.ctx.lineWidth = 0.05; // Relative to scale (BLOCK_SIZE)
-        this.ctx.setLineDash([0.1, 0.1]); // Dotted pattern
+        this.ctx.lineWidth = 0.05; 
+        this.ctx.setLineDash([0.1, 0.1]); 
         
-        // Left Guide Line
         this.ctx.beginPath();
-        this.ctx.moveTo(this.player.pos.x + minX, this.player.pos.y + 1); // Start below the piece top? No, let's start from piece bottom y? 
-        // Better: Start from the top of the grid column corresponding to the piece?
-        // User asked: "from left/right ends of the falling block down to where it blocks"
-        this.ctx.moveTo(this.player.pos.x + minX, this.player.pos.y + 1); // Approximate start
+        this.ctx.moveTo(this.player.pos.x + minX, this.player.pos.y + 1); 
         this.ctx.lineTo(this.player.pos.x + minX, ghostPos.y);
         this.ctx.stroke();
 
-        // Right Guide Line
         this.ctx.beginPath();
-        this.ctx.moveTo(this.player.pos.x + maxX + 1, this.player.pos.y + 1); // +1 because maxX is index, we want the right edge
+        this.ctx.moveTo(this.player.pos.x + maxX + 1, this.player.pos.y + 1); 
         this.ctx.lineTo(this.player.pos.x + maxX + 1, ghostPos.y);
         this.ctx.stroke();
         this.ctx.restore();
 
-        // 3. Draw Ghost Piece (Semi-transparent)
         this.ctx.globalAlpha = 0.2;
         this.drawMatrix(this.player.matrix, ghostPos);
         this.ctx.globalAlpha = 1.0;
-        // ---------------------------------------
 
         this.drawMatrix(this.player.matrix, this.player.pos);
         
@@ -291,15 +297,38 @@ class Tetris {
         }
     }
 
+    handleInput(deltaTime) {
+        // Handle Left/Right DAS (Delayed Auto Shift)
+        [37, 39].forEach(key => {
+            if (this.keys[key]) {
+                this.keyTimers[key] += deltaTime;
+                if (this.keyTimers[key] > this.DAS) {
+                    while (this.keyTimers[key] > this.DAS + this.ARR) {
+                        this.keyTimers[key] -= this.ARR;
+                        this.playerMove(key === 37 ? -1 : 1);
+                    }
+                }
+            }
+        });
+    }
+
     update(time = 0) {
         if (this.isGameOver || this.isPaused) return;
 
         const deltaTime = time - this.lastTime;
         this.lastTime = time;
 
+        // Handle Continuous Input
+        this.handleInput(deltaTime);
+
+        // Handle Gravity (Down Key = Fast Drop)
+        const currentInterval = this.keys[40] ? this.fastDropInterval : this.normalDropInterval;
         this.dropCounter += deltaTime;
-        if (this.dropCounter > this.dropInterval) {
+        if (this.dropCounter > currentInterval) {
             this.playerDrop();
+            // Optional: reset counter completely or subtract interval
+            // Resetting is safer to prevent 'catch up' jumps after lag
+            this.dropCounter = 0; 
         }
 
         this.draw();
@@ -323,6 +352,10 @@ class Tetris {
             document.removeEventListener('keydown', this.keyDownHandler);
             this.keyDownHandler = null;
         }
+        if (this.keyUpHandler) {
+            document.removeEventListener('keyup', this.keyUpHandler);
+            this.keyUpHandler = null;
+        }
     }
 
     updateScore() {
@@ -334,26 +367,46 @@ class Tetris {
         if (this.keyDownHandler) {
             document.removeEventListener('keydown', this.keyDownHandler);
         }
+        if (this.keyUpHandler) {
+            document.removeEventListener('keyup', this.keyUpHandler);
+        }
 
         this.keyDownHandler = event => {
             if (this.isGameOver || this.isPaused) return;
+
+            // Prevent default scrolling for game keys
+            if ([32, 37, 38, 39, 40].includes(event.keyCode)) {
+                event.preventDefault();
+            }
             
-            if (event.keyCode === 37) { // Left
-                this.playerMove(-1);
-            } else if (event.keyCode === 39) { // Right
-                this.playerMove(1);
-            } else if (event.keyCode === 40) { // Down
-                this.playerDrop();
-            } else if (event.keyCode === 81) { // Q - Rotate Left
+            // Handle Discrete Actions (Rotate, Hard Drop)
+            if (event.keyCode === 81) { // Q - Rotate Left
                 this.playerRotate(-1);
             } else if (event.keyCode === 87 || event.keyCode === 38) { // W or Up - Rotate Right
                 this.playerRotate(1);
             } else if (event.keyCode === 32) { // Space - Hard Drop
-                event.preventDefault();
                 this.playerHardDrop();
+            }
+
+            // Handle Continuous Actions (Set Flag)
+            if (event.keyCode === 37 || event.keyCode === 39) {
+                if (!this.keys[event.keyCode]) {
+                    this.keys[event.keyCode] = true;
+                    this.keyTimers[event.keyCode] = 0;
+                    this.playerMove(event.keyCode === 37 ? -1 : 1); // Initial Move
+                }
+            } else if (event.keyCode === 40) { // Down
+                this.keys[40] = true;
+            }
+        };
+
+        this.keyUpHandler = event => {
+            if ([37, 39, 40].includes(event.keyCode)) {
+                this.keys[event.keyCode] = false;
             }
         };
 
         document.addEventListener('keydown', this.keyDownHandler);
+        document.addEventListener('keyup', this.keyUpHandler);
     }
 }
