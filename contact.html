@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us - Tetris Game</title>
+  <link href='/style.css' rel='stylesheet'>
+</head>
+<body>
+  <div class="container">
+    <h1>Collaboration Inquiry</h1>
+    <p>We'd love to hear from you!</p>
+    
+    <form action="https://formspree.io/f/xaqboweb" method="POST">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="_replyto" required>
+
+      <label for="message">Message:</label>
+      <textarea id="message" name="message" required></textarea>
+
+      <button type="submit" class="btn-primary">Send Message</button>
+    </form>
+
+    <div style="margin-top: 20px;">
+      <a href="/" class="btn-success" style="text-decoration: none;">Back to Game</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -3,13 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tetris & Hello World</title>
+  <title>Multiplayer Tetris</title>
   <link href='/style.css' rel='stylesheet'>
-  <script src="/tetris.js"></script> <!-- Tetris Engine -->
+  <script src="/tetris.js"></script>
 </head>
 <body>
 
-  <!-- Game Section (New) -->
+  <!-- Navigation -->
+  <nav style="text-align: right; margin-bottom: 20px;">
+    <a href="/contact.html" class="btn-primary" style="text-decoration: none; font-size: 0.9em;">Collaboration Inquiry</a>
+  </nav>
+
+  <!-- Game Section -->
   <div id="game-container" class="container">
     <h1>Multiplayer Tetris</h1>
     
@@ -49,44 +54,17 @@
     </div>
   </div>
 
-
-  <!-- Legacy/Previous Content Section -->
-  <div class="legacy-section container" style="margin-top: 50px;">
-    <h3>Legacy Features</h3>
-    <div class="color-picker-section">
-      <h4 id="hello-text">Hello, world! (Color Configurable)</h4>
-      <div>
-        <input type="text" id="color-input" placeholder="Enter color (e.g. red, #00f)" />
-        <button id="save-btn">Save</button>
-      </div>
-    </div>
-
-    <h4>Affiliation Inquiry</h4>
-    <form action="https://formspree.io/f/xaqboweb" method="POST">
-      <label for="name">이름:</label>
-      <input type="text" id="name" name="name" required>
-
-      <label for="email">이메일:</label>
-      <input type="email" id="email" name="_replyto" required>
-
-      <label for="message">문의 내용:</label>
-      <textarea id="message" name="message" required></textarea>
-
-      <button type="submit" class="btn-primary">보내기</button>
-    </form>
-
-    <div id="disqus_thread" style="margin-top: 30px;"></div>
+  <!-- Comments Section -->
+  <div class="container" style="margin-top: 30px;">
+    <h3>Comments</h3>
+    <div id="disqus_thread"></div>
     <script>
-        /**
-        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
-        
         var disqus_config = function () {
-        this.page.url = window.location.href;  // Replace PAGE_URL with your page's canonical URL variable
-        this.page.identifier = 'test-web-builder-page-1'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.url = window.location.href; 
+        this.page.identifier = 'test-web-builder-page-1'; 
         };
         
-        (function() { // DON'T EDIT BELOW THIS LINE
+        (function() { 
         var d = document, s = d.createElement('script');
         s.src = 'https://test-web-builder.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());

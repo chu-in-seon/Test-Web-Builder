@@ -1,18 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // --- Legacy Color Picker Logic ---
-  const saveBtn = document.getElementById('save-btn');
-  const colorInput = document.getElementById('color-input');
-  const helloText = document.getElementById('hello-text');
-
-  if(saveBtn) {
-    saveBtn.addEventListener('click', () => {
-      const color = colorInput.value;
-      if (color) {
-        helloText.style.color = color;
-      }
-    });
-  }
-
   // --- Tetris Game & Lobby Logic ---
   const screens = {
     login: document.getElementById('login-screen'),
@@ -60,55 +46,61 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 1. Join Room
-  joinBtn.addEventListener('click', () => {
-    const name = nicknameInput.value.trim();
-    if (!name) return alert('Please enter a nickname');
-    
-    myNickname = name;
-    // Add myself
-    players.push({ name: myNickname, ready: false, isMe: true });
-    
-    // Simulate other players joining (Mock Data for UI testing)
-    setTimeout(() => {
-      players.push({ name: 'Player 2', ready: false, isMe: false });
-      renderPlayerList();
-    }, 1000);
-
-    setTimeout(() => {
-        players.push({ name: 'Player 3', ready: false, isMe: false });
+  if(joinBtn) {
+    joinBtn.addEventListener('click', () => {
+      const name = nicknameInput.value.trim();
+      if (!name) return alert('Please enter a nickname');
+      
+      myNickname = name;
+      // Add myself
+      players.push({ name: myNickname, ready: false, isMe: true });
+      
+      // Simulate other players joining (Mock Data for UI testing)
+      setTimeout(() => {
+        players.push({ name: 'Player 2', ready: false, isMe: false });
         renderPlayerList();
-      }, 2500);
+      }, 1000);
 
-    showScreen('lobby');
-    renderPlayerList();
-  });
+      setTimeout(() => {
+          players.push({ name: 'Player 3', ready: false, isMe: false });
+          renderPlayerList();
+        }, 2500);
+
+      showScreen('lobby');
+      renderPlayerList();
+    });
+  }
 
   // 2. Toggle Ready
-  readyBtn.addEventListener('click', () => {
-    isReady = !isReady;
-    // Update my status
-    const me = players.find(p => p.isMe);
-    if(me) me.ready = isReady;
+  if(readyBtn) {
+    readyBtn.addEventListener('click', () => {
+      isReady = !isReady;
+      // Update my status
+      const me = players.find(p => p.isMe);
+      if(me) me.ready = isReady;
 
-    readyBtn.textContent = isReady ? 'CANCEL READY' : 'READY';
-    readyBtn.classList.toggle('btn-success');
-    readyBtn.classList.toggle('btn-danger');
+      readyBtn.textContent = isReady ? 'CANCEL READY' : 'READY';
+      readyBtn.classList.toggle('btn-success');
+      readyBtn.classList.toggle('btn-danger');
 
-    renderPlayerList();
+      renderPlayerList();
 
-    // Simulate others getting ready automatically after a delay
-    if(isReady) {
-        setTimeout(() => {
-            players.forEach(p => { if(!p.isMe) p.ready = true; });
-            renderPlayerList();
-        }, 1500);
-    }
-  });
+      // Simulate others getting ready automatically after a delay
+      if(isReady) {
+          setTimeout(() => {
+              players.forEach(p => { if(!p.isMe) p.ready = true; });
+              renderPlayerList();
+          }, 1500);
+      }
+    });
+  }
 
   // 3. Force Start (For Testing)
-  forceStartBtn.addEventListener('click', () => {
-    startGame();
-  });
+  if(forceStartBtn) {
+    forceStartBtn.addEventListener('click', () => {
+      startGame();
+    });
+  }
 
   function startGame() {
     showScreen('game');
