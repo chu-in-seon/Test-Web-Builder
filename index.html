@@ -3,104 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
+  <title>Tetris & Hello World</title>
   <link href='/style.css' rel='stylesheet'>
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 20px;
-    }
-    form {
-      max-width: 500px;
-      margin-top: 20px;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    input[type="text"],
-    input[type="email"],
-    textarea {
-      width: calc(100% - 22px);
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    /* Styles for the color picker section */
-    .color-picker-section {
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #eee;
-    }
-    .color-picker-section h1 {
-      margin-top: 0;
-    }
-  </style>
+  <script src="/tetris.js"></script> <!-- Tetris Engine -->
 </head>
 <body>
-  <div class="color-picker-section">
-    <h1 id="hello-text">Hello, world!</h1>
-    <div>
-      <input type="text" id="color-input" placeholder="Enter color (e.g. red, #00f)" />
-      <button id="save-btn">Save</button>
+
+  <!-- Game Section (New) -->
+  <div id="game-container" class="container">
+    <h1>Multiplayer Tetris</h1>
+    
+    <!-- 1. Login Screen -->
+    <div id="login-screen">
+      <p>Enter your nickname to join the game.</p>
+      <input type="text" id="nickname-input" placeholder="Nickname" maxlength="10">
+      <br>
+      <button id="join-btn" class="btn-primary">Join Room</button>
+    </div>
+
+    <!-- 2. Lobby Screen (Hidden by default) -->
+    <div id="lobby-screen" class="hidden">
+      <h2>Game Lobby</h2>
+      <p>Waiting for players... (2-7 players required)</p>
+      
+      <ul id="player-list">
+        <!-- Player items will be added here dynamically -->
+      </ul>
+
+      <div id="lobby-controls">
+        <button id="ready-btn" class="btn-success">READY</button>
+        <p id="ready-status-msg" style="margin-top:10px; font-size: 0.9em; color: #7f8c8d;">
+          Click Ready to signal you are prepared.
+        </p>
+        <!-- Simulation Button for testing single player immediately -->
+        <button id="force-start-btn" class="btn-danger" style="margin-top: 20px; font-size: 0.8em;">Force Start (Single Player Test)</button>
+      </div>
+    </div>
+
+    <!-- 3. Game Screen (Hidden by default) -->
+    <div id="game-screen" class="hidden">
+      <div id="score-board">Score: <span id="score">0</span></div>
+      <canvas id="tetris" width="240" height="400"></canvas>
+      <p>Controls: Arrows to Move/Rotate (Up to rotate)</p>
+      <button onclick="location.reload()" class="btn-primary">Back to Lobby</button>
     </div>
   </div>
 
-  <h2>제휴 문의</h2>
-  <form action="https://formspree.io/f/xaqboweb" method="POST">
-    <label for="name">이름:</label>
-    <input type="text" id="name" name="name" required>
 
-    <label for="email">이메일:</label>
-    <input type="email" id="email" name="_replyto" required>
+  <!-- Legacy/Previous Content Section -->
+  <div class="legacy-section container" style="margin-top: 50px;">
+    <h3>Legacy Features</h3>
+    <div class="color-picker-section">
+      <h4 id="hello-text">Hello, world! (Color Configurable)</h4>
+      <div>
+        <input type="text" id="color-input" placeholder="Enter color (e.g. red, #00f)" />
+        <button id="save-btn">Save</button>
+      </div>
+    </div>
 
-    <label for="message">문의 내용:</label>
-    <textarea id="message" name="message" required></textarea>
+    <h4>Affiliation Inquiry</h4>
+    <form action="https://formspree.io/f/xaqboweb" method="POST">
+      <label for="name">이름:</label>
+      <input type="text" id="name" name="name" required>
 
-    <button type="submit">보내기</button>
-  </form>
+      <label for="email">이메일:</label>
+      <input type="email" id="email" name="_replyto" required>
 
-  <div id="disqus_thread"></div>
-  <script>
-      /**
-      *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-      *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
-      
-      var disqus_config = function () {
-      this.page.url = window.location.href;  // Replace PAGE_URL with your page's canonical URL variable
-      this.page.identifier = 'test-web-builder-page-1'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-      };
-      
-      (function() { // DON'T EDIT BELOW THIS LINE
-      var d = document, s = d.createElement('script');
-      s.src = 'https://test-web-builder.disqus.com/embed.js';
-      s.setAttribute('data-timestamp', +new Date());
-      (d.head || d.body).appendChild(s);
-      })();
-  </script>
-  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      <label for="message">문의 내용:</label>
+      <textarea id="message" name="message" required></textarea>
+
+      <button type="submit" class="btn-primary">보내기</button>
+    </form>
+
+    <div id="disqus_thread" style="margin-top: 30px;"></div>
+    <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+        
+        var disqus_config = function () {
+        this.page.url = window.location.href;  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'test-web-builder-page-1'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+        
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://test-web-builder.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
 
   <script defer type="text/javascript" src="/main.js"></script>
 </body>
