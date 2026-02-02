@@ -47,74 +47,7 @@ class Tetris {
         this.updateScore();
     }
 
-    // ... (omitted methods) ...
-
-    update(time = 0) {
-        if (this.isGameOver || this.isPaused) return;
-
-        const deltaTime = time - this.lastTime;
-        this.lastTime = time;
-
-        this.dropCounter += deltaTime;
-        if (this.dropCounter > this.dropInterval) {
-            this.playerDrop();
-        }
-
-        this.draw();
-        this.animationId = requestAnimationFrame(this.update.bind(this));
-    }
-
-    start() {
-        if (this.animationId) cancelAnimationFrame(this.animationId);
-        this.reset();
-        this.update();
-        this.setupControls();
-    }
-
-    stop() {
-        this.isGameOver = true;
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-            this.animationId = null;
-        }
-        if (this.keyDownHandler) {
-            document.removeEventListener('keydown', this.keyDownHandler);
-            this.keyDownHandler = null;
-        }
-    }
-
-    updateScore() {
-        const scoreElement = document.getElementById('score');
-        if(scoreElement) scoreElement.innerText = this.player.score;
-    }
-
-    setupControls() {
-        if (this.keyDownHandler) {
-            document.removeEventListener('keydown', this.keyDownHandler);
-        }
-
-        this.keyDownHandler = event => {
-            if (this.isGameOver || this.isPaused) return;
-            
-            if (event.keyCode === 37) { // Left
-                this.playerMove(-1);
-            } else if (event.keyCode === 39) { // Right
-                this.playerMove(1);
-            } else if (event.keyCode === 40) { // Down
-                this.playerDrop();
-            } else if (event.keyCode === 81) { // Q - Rotate Left
-                this.playerRotate(-1);
-            } else if (event.keyCode === 87 || event.keyCode === 38) { // W or Up - Rotate Right
-                this.playerRotate(1);
-            } else if (event.keyCode === 32) { // Space - Hard Drop
-                event.preventDefault();
-                this.playerHardDrop();
-            }
-        };
-
-        document.addEventListener('keydown', this.keyDownHandler);
-    }
-}
+    createPiece(type) {
         if (type === 'I') {
             return [
                 [0, 1, 0, 0],
