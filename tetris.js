@@ -270,7 +270,7 @@ class Tetris {
         this.ctx.restore();
     }
 
-    merge(arena, player) {
+    arenaSweep() {
         let rowCount = 1;
         outer: for (let y = this.grid.length - 1; y > 0; --y) {
             for (let x = 0; x < this.grid[y].length; ++x) {
@@ -329,6 +329,7 @@ class Tetris {
             } else if (event.keyCode === 87 || event.keyCode === 38) { // W or Up - Rotate Right
                 this.playerRotate(1);
             } else if (event.keyCode === 32) { // Space - Hard Drop
+                event.preventDefault();
                 this.playerHardDrop();
             }
         });
